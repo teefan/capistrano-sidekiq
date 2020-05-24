@@ -6,9 +6,9 @@ namespace :sidekiq do
     on roles fetch(:sidekiq_roles) do |role|
       git_plugin.switch_user(role) do
         if fetch(:sidekiq_service_unit_user) == :system
-          execute :sudo, :systemctl, "reload", fetch(:sidekiq_service_unit_name), raise_on_non_zero_exit: false
+          execute :sudo, :systemctl, "restart", fetch(:sidekiq_service_unit_name), raise_on_non_zero_exit: false
         else
-          execute :systemctl, "--user", "reload", fetch(:sidekiq_service_unit_name), raise_on_non_zero_exit: false
+          execute :systemctl, "--user", "restart", fetch(:sidekiq_service_unit_name), raise_on_non_zero_exit: false
         end
       end
     end
@@ -112,7 +112,7 @@ namespace :sidekiq do
       backend.execute :sudo, :mv, "/tmp/#{fetch :sidekiq_service_unit_name}.service", "#{systemd_path}/#{fetch :sidekiq_service_unit_name}.service"
       backend.execute :sudo, :systemctl, "daemon-reload"
     else
-      backend.execute :sudo, :mv, "/tmp/#{fetch :sidekiq_service_unit_name}.service", "#{systemd_path}/#{fetch :sidekiq_service_unit_name}.service"
+      backend.execute :mv, "/tmp/#{fetch :sidekiq_service_unit_name}.service", "#{systemd_path}/#{fetch :sidekiq_service_unit_name}.service"
       backend.execute :systemctl, "--user", "daemon-reload"
     end
   end
